@@ -17,7 +17,7 @@ def post_analyse():
     filename = secure_filename(file.filename)
     path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     file.save(path)
-    result = scan(path)
+    result = scan(path, use_magic=True)
     os.remove(path)
     return jsonify(format_result(result)), 400
 
