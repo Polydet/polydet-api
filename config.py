@@ -1,0 +1,3 @@
+DEBUG = False
+UPLOAD_FOLDER = '/tmp/polyglots'
+MAX_CONTENT_LENGTH = 100 * 1000 * 1000  # 100Mo
