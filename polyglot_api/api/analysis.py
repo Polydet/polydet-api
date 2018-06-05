@@ -7,7 +7,7 @@ from werkzeug.utils import secure_filename
 from polyglot_api import app
 
 
-@app.route('/analysis', methods=['POST'])
+@app.route('/api/analysis', methods=['POST'])
 def post_analyse():
     if 'file' not in request.files:
         return jsonify(error='Missing file named "file"'), 400

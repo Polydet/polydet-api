@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+    <form action="/" method="POST" enctype="multipart/form-data">
+        <input type="file" name="file"/>
+        <input type="submit" value="Submit"/>
+    </form>
+    {% if results %}
+        <table border="black solid 1px">
+            <thead>
+            <tr>
+                <td>Type</td>
+                <td>Suspicious</td>
+            </tr>
+            </thead>
+            <tbody>
+            {% for (type, levels) in results.items() %}
+                <tr>
+                    <td>{{ type }}</td>
+                    <td>{{ levels }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+{% endblock %}
