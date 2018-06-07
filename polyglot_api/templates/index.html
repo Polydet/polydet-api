@@ -1,25 +1,55 @@
 {% extends "base.html" %}
 {% block content %}
-    <form action="/" method="POST" enctype="multipart/form-data">
-        <input type="file" name="file"/>
-        <input type="submit" value="Submit"/>
-    </form>
-    {% if results %}
-        <table border="black solid 1px">
-            <thead>
-            <tr>
-                <td>Type</td>
-                <td>Suspicious</td>
-            </tr>
-            </thead>
-            <tbody>
-            {% for (type, levels) in results.items() %}
-                <tr>
-                    <td>{{ type }}</td>
-                    <td>{{ levels }}</td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    {% endif %}
+    <div class="row">
+        <div class="col-md-12">
+            <form action="/" method="POST" enctype="multipart/form-data">
+                <div class="input-group mb-3">
+                    <div class="custom-file">
+                        <input id="analyseFileInput"
+                               class="custom-file-input"
+                               type="file"
+                               name="file"
+                               required>
+                        <label class="custom-file-label"
+                               for="analyseFileInput">Choose file</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="mx-auto">
+                        <input type="submit" value="Submit" class="btn btn-primary mb-2"/>
+                    </div>
+                </div>
+            </form>
+            {% if results %}
+                <div>
+                    <p>
+                        Scan results for the file {{ results.filename }}:
+                        {% if results.is_suspicious %}
+                            <span class="text-warning">suspicious</span>.
+                        {% else %}
+                            <span class="text-success">benign</span>.
+                        {% endif %}
+                    </p>
+                </div>
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <td>Type</td>
+                        <td>Suspicious attributes</td>
+                        <td>Was found by <i>libmagic</i></td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for entry in results %}
+                        <tr>
+                            <td>{{ entry.type }}</td>
+                            <td>{{ entry.level|polyglot_level }}</td>
+                            <td>{{ entry.found_by_magic }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+        </div>
+    </div>
 {% endblock %}

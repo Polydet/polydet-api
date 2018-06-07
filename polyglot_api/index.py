@@ -1,10 +1,25 @@
 import os
 
 from flask import render_template, request
-from polyglot_detector import PolyglotLevel, scan
+from polyglot_detector import PolyglotLevel
 from werkzeug.utils import secure_filename
 
 from polyglot_api import app
+from polyglot_api.analysis import Analysis
+
+
+@app.template_filter('polyglot_level')
+def display_polyglot_level(level: PolyglotLevel):
+    res = []
+    if level & PolyglotLevel.INVALID:
+        res.append('invalid')
+    if level & PolyglotLevel.GARBAGE_AT_BEGINNING:
+        res.append('suspicious data at the beginning')
+    if level & PolyglotLevel.GARBAGE_IN_MIDDLE:
+        res.append('suspicious data at the middle')
+    if level & PolyglotLevel.GARBAGE_AT_END:
+        res.append('suspicious data at the end')
+    return ', '.join(res) if res else 'is valid'
 
 
 @app.route('/', methods=['GET'])
@@ -22,22 +37,6 @@ def post_index():
     filename = secure_filename(file.filename)
     path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     file.save(path)
-    results = scan(path, use_magic=True)
+    results = Analysis(file.filename, path)
     os.remove(path)
-    return render_template('index.html', results=__flat_embedded(results))
-
-
-def __flat_embedded(results: {str: PolyglotLevel}):
-    """Return the results with flatten embedded formats.
-    For example:
-    >>> results = {'zip': PolyglotLevel.VALID|PolyglotLevel.GARBAGE_AT_BEGINNING.with_embedded("jar")}
-    >>> __flat_embedded(results)
-    {'zip': <PolyglotLevel.VALID|GARBAGE_AT_BEGINNING: 5 []>, 'jar': <PolyglotLevel.VALID|GARBAGE_AT_BEGINNING: 5 []>}
-    """
-    new_result = {}
-    for type, level in results.items():
-        level_without_embedded = level & ~PolyglotLevel.EMBED
-        new_result[type] = level_without_embedded
-        for embedded in level.embedded:
-            new_result[embedded] = new_result.get(embedded, PolyglotLevel(0)) | level_without_embedded  # TODO Use PolyglotLevel.None
-    return new_result
+    return render_template('index.html', results=results)
