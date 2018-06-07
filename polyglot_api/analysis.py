@@ -23,6 +23,7 @@ class Analysis:
             for embedded_type in level.embedded:
                 self.results.append(AnalysisEntry(embedded_type, level_without_embedded, embedded_type in magic_scan_results))
             self.results.append(AnalysisEntry(type, level_without_embedded, type in magic_scan_results))
+        self.results.sort(key=lambda entry: entry.type)
 
     def __iter__(self):
         return self.results.__iter__()
