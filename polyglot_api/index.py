@@ -19,7 +19,7 @@ def display_polyglot_level(level: PolyglotLevel):
         res.append('suspicious data at the middle')
     if level & PolyglotLevel.GARBAGE_AT_END:
         res.append('suspicious data at the end')
-    return ', '.join(res) if res else 'is valid'
+    return ', '.join(res)
 
 
 @app.route('/', methods=['GET'])
