@@ -44,7 +44,13 @@
                         <tr>
                             <td>{{ entry.type }}</td>
                             <td>{{ entry.level|polyglot_level }}</td>
-                            <td>{{ entry.found_by_magic }}</td>
+                            <td>
+                                {% if entry.found_by_magic %}
+                                    <span class="text-success">True</span>
+                                {% else %}
+                                    False
+                                {% endif %}
+                            </td>
                         </tr>
                     {% endfor %}
                     </tbody>
