@@ -16,5 +16,4 @@ app.config.from_object('config')
 
 prepare_upload_folder(app.config['UPLOAD_FOLDER'])
 
-import polyglot_api.api
 import polyglot_api.index
