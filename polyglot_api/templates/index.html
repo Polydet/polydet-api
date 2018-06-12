@@ -41,6 +41,7 @@
                     <tr>
                         <td>Type</td>
                         <td>Suspicious attributes</td>
+                        <td>Found by Polyglot detector (name subject to change)</td>
                         <td>Was found by <i>libmagic</i></td>
                     </tr>
                     </thead>
@@ -49,11 +50,12 @@
                         <tr>
                             <td>{{ entry.type }}</td>
                             <td>{{ entry.level|polyglot_level }}</td>
+                            <td><span class="text-success">True</span></td>
                             <td>
                                 {% if entry.found_by_magic %}
                                     <span class="text-success">True</span>
                                 {% else %}
-                                    False
+                                    <span>False</span>
                                 {% endif %}
                             </td>
                         </tr>
