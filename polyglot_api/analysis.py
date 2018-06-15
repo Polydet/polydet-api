@@ -30,4 +30,8 @@ class Analysis:
 
     @property
     def is_suspicious(self):
+        return any(entry.level != PolyglotLevel.VALID for entry in self.results)
+
+    @property
+    def is_dangerous(self):
         return len(self.results) > 1
