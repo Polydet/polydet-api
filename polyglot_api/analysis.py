@@ -1,3 +1,5 @@
+import time
+
 from polyglot_detector import PolyglotLevel, scan
 from polyglot_detector.magic import magic_scan
 
@@ -14,8 +16,11 @@ class Analysis:
     """Represent the analysis result of a file"""
     def __init__(self, filename, path):
         self.filename = filename
+        start_time = time.time()
         self.scan_results = scan(path, use_magic=True)
+        self.elapsed_time = time.time() - start_time
         self.results = []
+
         magic_scan_results = magic_scan(path)
 
         for type, level in self.scan_results.items():

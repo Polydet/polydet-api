@@ -30,12 +30,14 @@
                     <p>
                         Scan results for the file {{ results.filename }}:
                         {% if results.is_dangerous %}
-                            <span class="text-danger">potentially dangerous</span>
+                            <span class="text-danger">potentially dangerous</span>.
                         {% elif results.is_suspicious %}
                             <span class="text-warning">suspicious</span>.
                         {% else %}
                             <span class="text-success">benign</span>.
                         {% endif %}
+                        <br/>
+                    The scan took {{ '%0.4f'|format(results.elapsed_time * 1000) }} milliseconds.
                     </p>
                 </div>
                 <table class="table">
