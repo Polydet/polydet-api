@@ -2,7 +2,7 @@
 {% block content %}
     <div class="row">
         <div class="mx-auto">
-	    <h1>Polyglot detector (name subject to change)</h1>
+            <h1>Polyglot detector (name subject to change)</h1>
         </div>
     </div>
     <div class="row">
@@ -13,7 +13,8 @@
                         <input id="analyseFileInput"
                                class="custom-file-input"
                                type="file"
-                               name="file"
+                               name="file[]"
+                               multiple
                                required>
                         <label class="custom-file-label"
                                for="analyseFileInput">Choose file</label>
@@ -25,56 +26,61 @@
                     </div>
                 </div>
             </form>
-            {% if results %}
-                <div>
-                    <p>
-                        Scan results for the file {{ results.filename }}:
-                        {% if results.is_dangerous %}
-                            <span class="text-danger">potentially dangerous</span>.
-                        {% elif results.is_suspicious %}
-                            <span class="text-warning">suspicious</span>.
-                        {% else %}
-                            <span class="text-success">benign</span>.
-                        {% endif %}
-                        <br/>
-                    The scan took {{ '%0.4f'|format(results.elapsed_time * 1000) }} milliseconds.
-                    </p>
+            {% for result in results %}
+                <div class="row mb-5">
+                    <div class="col-md-12">
+                        <div>
+                            <p>
+                                Scan results for the file {{ result.filename }}:
+                                {% if result.is_dangerous %}
+                                    <span class="text-danger">potentially dangerous</span>.
+                                {% elif result.is_suspicious %}
+                                    <span class="text-warning">suspicious</span>.
+                                {% else %}
+                                    <span class="text-success">benign</span>.
+                                {% endif %}
+                                <br/>
+                                The scan took {{ '%0.4f'|format(result.elapsed_time * 1000) }} milliseconds.
+                            </p>
+                        </div>
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <td>Type</td>
+                                <td>Suspicious attributes</td>
+                                <td>Found by <a href="{{ repository_url }}">Polyglot detector (name subject to
+                                    change)</a></td>
+                                <td>Was found by <a href="https://github.com/file/file"><i>libmagic</i></a></td>
+                                <td>Was found by <a href="http://mark0.net/soft-trid-e.html">TrID</a></td>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for entry in result %}
+                                <tr>
+                                    <td>{{ entry.ext }}</td>
+                                    <td>{{ entry.level|polyglot_level }}</td>
+                                    <td><span class="text-success">&#x2714;</span></td>
+                                    <td>
+                                        {% if entry.ext in result.magic_scan_results %}
+                                            <span class="text-success">&#x2714;</span>
+                                        {% else %}
+                                            <span class="text-danger">&#x1F5F6;</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if entry.ext in result.trid_scan_results %}
+                                            <span class="text-success">&#x2714;: {{ result.trid_scan_results[entry.ext] }}%</span>
+                                        {% else %}
+                                            <span class="text-danger">&#x1F5F6;</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-                <table class="table">
-                    <thead>
-                    <tr>
-                        <td>Type</td>
-                        <td>Suspicious attributes</td>
-                        <td>Found by <a href="{{ repository_url }}">Polyglot detector (name subject to change)</a></td>
-                        <td>Was found by <a href="https://github.com/file/file"><i>libmagic</i></a></td>
-                        <td>Was found by <a href="http://mark0.net/soft-trid-e.html">TrID</a></td>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for entry in results %}
-                        <tr>
-                            <td>{{ entry.ext }}</td>
-                            <td>{{ entry.level|polyglot_level }}</td>
-                            <td><span class="text-success">&#x2714;</span></td>
-                            <td>
-                                {% if entry.ext in results.magic_scan_results %}
-                                    <span class="text-success">&#x2714;</span>
-                                {% else %}
-                                    <span class="text-danger">&#x1F5F6;</span>
-                                {% endif %}
-                            </td>
-                            <td>
-                                {% if entry.ext in results.trid_scan_results %}
-                                    <span class="text-success">&#x2714;: {{ results.trid_scan_results[entry.ext] }}%</span>
-                                {% else %}
-                                    <span class="text-danger">&#x1F5F6;</span>
-                                {% endif %}
-                            </td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-            {% endif %}
+            {% endfor %}
         </div>
     </div>
 {% endblock %}
