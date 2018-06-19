@@ -1,5 +1,6 @@
 import logging
 import re
+import os
 import subprocess
 import time
 
@@ -51,7 +52,8 @@ TRID_RESULT_RE = re.compile('^\s*(\d+\.\d+)% \(\.([^)]+)\) ')
 
 
 def trid_scan(path: str) -> {str: float}:
-    output = subprocess.check_output(['/opt/trid/trid', '-n:5', path], env={'LC_ALL': 'C.UTF-8'})
+    output = subprocess.check_output(['trid', '-n:5', path],
+                                     env={'PATH': os.getenv('PATH'), 'LC_ALL': 'C.UTF-8'})
     output = output.decode('ascii')
     result_lines = output.split('\n')[6:]
     results = {}
