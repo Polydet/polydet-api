@@ -70,7 +70,7 @@ def parse_trid_output(line: str) -> (float, str):
     matches = TRID_RESULT_RE.match(line)
     if not matches:
         return None
-    percentage, ext = float(matches[1]), matches[2].lower()
+    percentage, ext = float(matches.group(1)), matches.group(2).lower()
     # TODO Find better way to avoid this sort of case. Maybe use mime ?
     if ext == 'tif/tiff':
         ext = 'tiff'
