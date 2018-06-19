@@ -56,10 +56,20 @@ def trid_scan(path: str) -> {str: float}:
     result_lines = output.split('\n')[6:]
     results = {}
     for line in result_lines:
-        matches = TRID_RESULT_RE.match(line)
-        if not matches:
+        result = parse_trid_output(line)
+        if result is None:
             break
-        percentage, ext = float(matches[1]), matches[2].lower()
+        percentage, ext = result
         results[ext] = results.get(ext, 0.0) + percentage
     logger.debug('TRiD results: %s' % results)
     return results
+
+def parse_trid_output(line: str) -> (float, str):
+    matches = TRID_RESULT_RE.match(line)
+    if not matches:
+        return None
+    percentage, ext = float(matches[1]), matches[2].lower()
+    # TODO Find better way to avoid this sort of case. Maybe use mime ?
+    if ext == 'tif/tiff':
+        ext = 'tiff'
+    return percentage, ext
