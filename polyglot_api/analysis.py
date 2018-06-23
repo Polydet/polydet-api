@@ -4,8 +4,8 @@ import os
 import subprocess
 import time
 
-from polyglot_detector import PolyglotLevel, scan
-from polyglot_detector.magic import magic_scan
+from polydet import PolyglotLevel, scan
+from polydet.magic import magic_scan
 
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
@@ -65,6 +65,7 @@ def trid_scan(path: str) -> {str: float}:
         results[ext] = results.get(ext, 0.0) + percentage
     logger.debug('TRiD results: %s' % results)
     return results
+
 
 def parse_trid_output(line: str) -> (float, str):
     matches = TRID_RESULT_RE.match(line)

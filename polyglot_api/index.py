@@ -1,7 +1,7 @@
 import os
 
 from flask import render_template, request
-from polyglot_detector import PolyglotLevel
+from polydet import PolyglotLevel
 from werkzeug.utils import secure_filename
 
 from polyglot_api import app
