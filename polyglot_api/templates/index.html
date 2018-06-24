@@ -58,7 +58,23 @@
                             {% for entry in result %}
                                 <tr>
                                     <td>{{ entry.ext }}</td>
-                                    <td>{{ entry.level|polyglot_level }}</td>
+                                    <td>
+                                        <ul>
+                                        {% if not entry.level.is_valid %}
+                                            <li>Invalid</li>
+                                        {% endif %}
+
+                                        {% if entry.level.suspicious_chunks %}
+                                            <li>Suspicious chunks:
+                                                <ul class="chunks-list">
+                                                    {% for chunk in entry.level.suspicious_chunks %}
+                                                        <li>{{ '0x%X + %d'|format(chunk[0], chunk[1]) }}</li>
+                                                    {% endfor %}
+                                                </ul>
+                                            </li>
+                                        {% endif %}
+                                        </ul>
+                                    </td>
                                     <td><span class="text-success">&#x2714;</span></td>
                                     <td>
                                         {% if entry.ext in result.magic_scan_results %}

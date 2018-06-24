@@ -1,0 +1,4 @@
+.chunks-list {
+    max-height: 9em;
+    overflow-y: auto;
+}

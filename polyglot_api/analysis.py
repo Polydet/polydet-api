@@ -30,10 +30,10 @@ class Analysis:
         self.trid_scan_results = trid_scan(path)
 
         for type, level in self.scan_results.items():
-            level_without_embedded = level & ~PolyglotLevel.EMBED
+            level_without_embedded = PolyglotLevel(is_valid=level.is_valid, suspicious_chunks=level.suspicious_chunks)
             for embedded_type in level.embedded:
                 self.results.append(AnalysisEntry(embedded_type, level_without_embedded))
-            self.results.append(AnalysisEntry(type, level_without_embedded))
+            self.results.append(AnalysisEntry(type, level))
         self.results.sort(key=lambda entry: entry.ext)
 
     def __iter__(self):
@@ -41,7 +41,7 @@ class Analysis:
 
     @property
     def is_suspicious(self):
-        return any(entry.level != PolyglotLevel.VALID for entry in self.results)
+        return any(entry.level != PolyglotLevel() for entry in self.results)
 
     @property
     def is_dangerous(self):
