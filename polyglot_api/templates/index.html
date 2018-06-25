@@ -1,4 +1,15 @@
 {% extends "base.html" %}
+{% macro chunk_row(chunk)%}
+    <td>
+        {{ '0x%X'|format(chunk[0]) }}
+    </td>
+    <td>
+        {{ '0x%X'|format(chunk[0] + chunk[1]) }}
+    </td>
+    <td>
+        {{ '%d'|format(chunk[1]) }}
+    </td>
+{% endmacro %}
 {% block content %}
     <div class="row">
         <div class="mx-auto">
@@ -43,46 +54,41 @@
                                 The scan took {{ '%0.4f'|format(result.elapsed_time * 1000) }} milliseconds.
                             </p>
                         </div>
-                        <table class="table">
+                        <table class="table table-bordered">
                             <thead>
                             <tr>
-                                <td>Type</td>
-                                <td>Suspicious attributes</td>
-                                <td>Found by <a href="{{ repository_url }}">Polydet</a></td>
-                                <td>Found by <a href="https://github.com/file/file"><i>libmagic</i></a></td>
-                                <td>Found by <a href="http://mark0.net/soft-trid-e.html">TrID</a></td>
+                                <td rowspan="2">Type</td>
+                                <td colspan="3">Suspicious chunks</td>
+                                <td rowspan="2">Found by <a href="{{ repository_url }}">Polydet</a></td>
+                                <td rowspan="2">Found by <a href="https://github.com/file/file"><i>libmagic</i></a></td>
+                                <td rowspan="2">Found by <a href="http://mark0.net/soft-trid-e.html">TrID</a></td>
+                            </tr>
+                            <tr>
+                                <td>Begin</td>
+                                <td>End</td>
+                                <td>Length</td>
                             </tr>
                             </thead>
                             <tbody>
                             {% for entry in result %}
                                 <tr>
-                                    <td>.{{ entry.ext }}</td>
-                                    <td>
-                                        <ul>
-                                        {% if not entry.level.is_valid %}
-                                            <li>Invalid</li>
-                                        {% endif %}
-
-                                        {% if entry.level.suspicious_chunks %}
-                                            <li>Suspicious chunks:
-                                                <ul class="chunks-list">
-                                                    {% for chunk in entry.level.suspicious_chunks %}
-                                                        <li>{{ '0x%X + %d'|format(chunk[0], chunk[1]) }}</li>
-                                                    {% endfor %}
-                                                </ul>
-                                            </li>
-                                        {% endif %}
-                                        </ul>
+                                    <td rowspan="{{ [1, entry.level.suspicious_chunks|length]|max }}">.{{ entry.ext }}</td>
+                                    {% if entry.level.suspicious_chunks %}
+                                        {{ chunk_row(entry.level.suspicious_chunks[0]) }}
+                                    {% else %}
+                                        <td colspan="3"></td>
+                                    {% endif %}
+                                    <td rowspan="{{ [1, entry.level.suspicious_chunks|length]|max }}">
+                                        <span class="text-success">&#x2714;</span>
                                     </td>
-                                    <td><span class="text-success">&#x2714;</span></td>
-                                    <td>
+                                    <td rowspan="{{ [1, entry.level.suspicious_chunks|length]|max }}">
                                         {% if entry.ext in result.magic_scan_results %}
                                             <span class="text-success">&#x2714;</span>
                                         {% else %}
                                             <span class="text-danger">&#x1F5F6;</span>
                                         {% endif %}
                                     </td>
-                                    <td>
+                                    <td rowspan="{{ [1, entry.level.suspicious_chunks|length]|max }}">
                                         {% if entry.ext in result.trid_scan_results %}
                                             <span class="text-success">&#x2714;: {{ result.trid_scan_results[entry.ext] }}%</span>
                                         {% else %}
@@ -90,6 +96,11 @@
                                         {% endif %}
                                     </td>
                                 </tr>
+                                {% for chunk in entry.level.suspicious_chunks[1:] %}
+                                    <tr>
+                                        {{ chunk_row(chunk) }}
+                                    </tr>
+                                {% endfor %}
                             {% endfor %}
                             </tbody>
                         </table>
