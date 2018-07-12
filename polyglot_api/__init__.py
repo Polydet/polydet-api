@@ -2,6 +2,7 @@ import logging
 import os
 
 from flask import Flask
+from flask_cors import CORS
 
 formatter = logging.Formatter('%(name)-12s %(levelname)-8s %(message)s')
 handler = logging.StreamHandler()
@@ -20,6 +21,7 @@ def prepare_upload_folder(folder):
 
 app = Flask(__name__)
 app.config.from_object('config')
+CORS(app)
 
 
 prepare_upload_folder(app.config['UPLOAD_FOLDER'])
