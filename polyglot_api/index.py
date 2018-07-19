@@ -1,4 +1,6 @@
 import os
+import tempfile
+import requests
 
 from flask import jsonify, make_response, render_template, request
 from flask_cors import cross_origin
@@ -33,7 +35,7 @@ def post_index():
 @app.route('/api/analysis', methods=['POST'])
 @cross_origin()
 def api_analyse():
-    if 'file[]' not in request.files:
+    if 'file[]' not in request.files and 'file_url' not in request.form:
         return make_response(jsonify({'error': 'No input file'}), 400)
     files = request.files.getlist('file[]')
     results = []
@@ -45,6 +47,18 @@ def api_analyse():
         file.save(path)
         results.append(Analysis(file.filename, path))
         os.remove(path)
+    urls = request.form.getlist('file_url')
+    for url in urls:
+        try:
+            r = requests.get(url, stream=True)
+        except Exception:
+            return make_response(jsonify({'error': 'File download failed'}), 400)
+        if r.status_code != 200:
+            return make_response(jsonify({'error': 'File download failed'}), 400)
+        with tempfile.NamedTemporaryFile(dir=app.config['UPLOAD_FOLDER']) as file:
+            for chunk in r.iter_content(chunk_size=128):
+                file.write(chunk)
+            results.append(Analysis(url, file.name))
     return jsonify([{
         'filename': result.filename,
         'elapsedTime': result.elapsed_time / 1000,
