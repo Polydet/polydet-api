@@ -56,7 +56,7 @@ def api_analyse():
         if r.status_code != 200:
             return make_response(jsonify({'error': 'File download failed'}), 400)
         with tempfile.NamedTemporaryFile(dir=app.config['UPLOAD_FOLDER']) as file:
-            for chunk in r.iter_content(chunk_size=128):
+            for chunk in r.iter_content(chunk_size=4096):
                 file.write(chunk)
             file.flush()
             results.append(Analysis(url, file.name))
