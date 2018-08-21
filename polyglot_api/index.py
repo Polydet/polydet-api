@@ -58,6 +58,7 @@ def api_analyse():
         with tempfile.NamedTemporaryFile(dir=app.config['UPLOAD_FOLDER']) as file:
             for chunk in r.iter_content(chunk_size=128):
                 file.write(chunk)
+            file.flush()
             results.append(Analysis(url, file.name))
     return jsonify([{
         'filename': result.filename,
