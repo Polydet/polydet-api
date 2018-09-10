@@ -68,7 +68,7 @@ def api_analyse():
             'ext': entry.ext,
             'suspiciousChunks': [{'offset': chunk[0], 'length': chunk[1]} for chunk in entry.level.suspicious_chunks],
             'libmagic': entry.ext in result.magic_scan_results,
-            'trid': result.trid_scan_results.get(entry.ext, False) / 100,
+            'trid': result.trid_scan_results[entry.ext] / 100 if entry.ext in result.trid_scan_results else None,
         } for entry in result]
     } for result in results])
 
